@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tic Tac Toe</title>
+  <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@700&display=swap" rel="stylesheet" />
+  <style>
+    /* Reset and base styles */
+    * {
+      padding: 0;
+      margin: 0;
+      box-sizing: border-box;
+      font-family: "Raleway", sans-serif;
+    }
+    body {
+      height: 100vh;
+      background: linear-gradient(135deg, #FF5733, #33FF57, #3357FF);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .wrapper {
+      display: flex;
+      align-items: flex-start;
+      gap: 2em;
+    }
+    .scoreboard {
+      background: #ffffff;
+      border-radius: 8px;
+      padding: 1em;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+      width: 260px;
+    }
+    h2 {
+      color: black;
+      text-align: center;
+      margin-bottom: 1em;
+      font-size: 1.5em;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    thead th {
+      background-color: #000000;
+      color: #ffffff;
+      padding: 0.5em;
+      text-align: center;
+      font-size: 1.2em;
+    }
+    tbody td {
+      background-color: #f0f0f0;
+      color: #333;
+      padding: 0.5em;
+      text-align: center;
+      font-size: 1.2em;
+    }
+    .controls {
+      text-align: center;
+      margin-top: 1em;
+    }
+    .popup {
+      background: linear-gradient(135deg, #8052ec, #d161ff);
+      height: 100%;
+      width: 100%;
+      position: absolute;
+      display: flex;
+      z-index: 2;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 1em;
+      font-size: 12vmin;
+    }
+    #message {
+      color: #ffffff;
+      text-align: center;
+      font-size: 1em;
+    }
+    .popup.hide {
+      display: none;
+    }
+    .game-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: transparent;
+      border-radius: 8px;
+      padding: 1em;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+    }
+    .game-title {
+      margin-bottom: 2em;
+    }
+    .game-title h1 {
+      color: #00ffb3;
+      font-size: 3em;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    }
+    .container {
+      width: 70vmin;
+      height: 70vmin;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2vmin;
+    }
+    .button-option {
+      background: #ffffff;
+      height: 22vmin;
+      width: 22vmin;
+      border: none;
+      border-radius: 8px;
+      font-size: 12vmin;
+      color: #d161ff;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+      position: relative;
+    }
+    .button-option .inner-box {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      height: 80%;
+      width: 80%;
+      background-color: transparent;
+    }
+    .controls button {
+      font-size: 1.3em;
+      padding: 1em;
+      border-radius: 8px;
+      background-color: #0a0027;
+      color: #ffffff;
+      border: none;
+      margin: 0.5em;
+    }
+    #new-game {
+      background-color: #d161ff;
+    }
+    #restart {
+      background-color: #007bff;
+    }
+    #toggle-mode {
+      background-color: #ffcc00;
+    }
+    #adjust-color {
+      background-color: #ff5722;
+    }
+    #select-emoji {
+      background-color: #4caf50;
+    }
+    .color-picker {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 300px;
+      background: #ffffff;
+      border-radius: 8px;
+      padding: 1em;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+      display: none;
+      z-index: 999;
+    }
+    .color-option {
+      display: inline-block;
+      width: 50px;
+      height: 50px;
+      margin: 10px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    .color-option:nth-child(1) {
+      background: linear-gradient(135deg, #FF5733, #33FF57, #3357FF);
+    }
+    .color-option:nth-child(2) {
+      background: linear-gradient(135deg, #FF33A6, #A633FF, #33FFF2);
+    }
+    .color-option:nth-child(3) {
+      background: linear-gradient(135deg, #33FF57, #3357FF, #FF33A6);
+    }
+    .color-picker-buttons {
+      text-align: center;
+      margin-top: 1em;
+    }
+    .color-picker-buttons button {
+      font-size: 1em;
+      padding: 0.5em 1em;
+      border-radius: 8px;
+      background-color: #007bff;
+      color: #ffffff;
+      border: none;
+      margin: 0.5em;
+    }
+    .emoji-picker {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 300px;
+      background: #ffffff;
+      border-radius: 8px;
+      padding: 1em;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+      display: none;
+      z-index: 999;
+    }
+    .emoji-option {
+      display: inline-block;
+      font-size: 2em;
+      margin: 10px;
+      cursor: pointer;
+      text-align: center;
+    }
+    .emoji-picker-buttons {
+      text-align: center;
+      margin-top: 1em;
+    }
+    .emoji-picker-buttons button {
+      font-size: 1em;
+      padding: 0.5em 1em;
+      border-radius: 8px;
+      background-color: #007bff;
+      color: #ffffff;
+      border: none;
+      margin: 0.5em;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <div class="game-container">
+      <div class="controls">
+        <button id="adjust-color">Adjust Color</button>
+        <button id="select-emoji">Select Emojis</button>
+        <button id="new-game">New Game</button>
+        <button id="restart">Restart Scores</button>
+        <button id="toggle-mode">Play with Bot</button>
+      </div>
+      <div class="game-title">
+        <h1>Tic Tac Toe</h1>
+      </div>
+      <div class="container">
+        <!-- The 9 slots for the game board -->
+        <button class="button-option"><span class="inner-box"></span></button>
+        <button class="button-option"><span class="inner-box"></span></button>
+        <button class="button-option"><span class="inner-box"></span></button>
+        <button class="button-option"><span class="inner-box"></span></button>
+        <button class="button-option"><span class="inner-box"></span></button>
+        <button class="button-option"><span class="inner-box"></span></button>
+        <button class="button-option"><span class="inner-box"></span></button>
+        <button class="button-option"><span class="inner-box"></span></button>
+        <button class="button-option"><span class="inner-box"></span></button>
+      </div>
+    </div>
+    <div class="scoreboard">
+      <h2>Scoreboard</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Player X</th>
+            <th>Player O</th>
+            <th>Draws</th>
+          </tr>
+        </thead>
+        <tbody id="scoreboard-body">
+          <tr>
+            <td><span id="score-x">0</span></td>
+            <td><span id="score-o">0</span></td>
+            <td><span id="score-draws">0</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Color Picker Popup -->
+  <div id="color-picker" class="color-picker">
+    <div class="color-option" style="background: #FF5733;" data-color="#FF5733"></div>
+    <div class="color-option" style="background: #33FF57;" data-color="#33FF57"></div>
+    <div class="color-option" style="background: #3357FF;" data-color="#3357FF"></div>
+    <div class="color-picker-buttons">
+      <button id="close-color-picker">Close</button>
+    </div>
+  </div>
+
+  <!-- Emoji Picker Popup -->
+  <div id="emoji-picker" class="emoji-picker">
+    <div class="emoji-option" data-emoji="❌">❌</div>
+    <div class="emoji-option" data-emoji="⭕">⭕</div>
+    <div class="emoji-option" data-emoji="❤️">❤️</div>
+    <div class="emoji-picker-buttons">
+      <button id="close-emoji-picker">Close</button>
+    </div>
+  </div>
+
+  <script>
+    const colorPicker = document.getElementById('color-picker');
+    const emojiPicker = document.getElementById('emoji-picker');
+    const scoreXElement = document.getElementById('score-x');
+    const scoreOElement = document.getElementById('score-o');
+    const scoreDrawsElement = document.getElementById('score-draws');
+    let playerXEmoji = '❌';
+    let playerOEmoji = '⭕';
+
+    const buttons = document.querySelectorAll('.button-option');
+    let currentPlayer = 'X';
+    let scores = { X: 0, O: 0, Draws: 0 };
+    const winPatterns = [
+      [0, 1, 2],
+      [3, 4, 5],
+      [6, 7, 8],
+      [0, 3, 6],
+      [1, 4, 7],
+      [2, 5, 8],
+      [0, 4, 8],
+      [2, 4, 6]
+    ];
+
+    function checkWinner() {
+      for (let pattern of winPatterns) {
+        const [a, b, c] = pattern;
+        if (buttons[a].innerHTML && buttons[a].innerHTML === buttons[b].innerHTML && buttons[a].innerHTML === buttons[c].innerHTML) {
+          return buttons[a].innerHTML;
+        }
+      }
+      return [...buttons].every(button => button.innerHTML) ? 'Draw' : null;
+    }
+
+    function updateScoreboard() {
+      scoreXElement.textContent = scores.X;
+      scoreOElement.textContent = scores.O;
+      scoreDrawsElement.textContent = scores.Draws;
+    }
+
+    function handleClick(event) {
+      const button = event.target;
+      if (button.innerHTML) return;
+      button.innerHTML = currentPlayer === 'X' ? playerXEmoji : playerOEmoji;
+      const winner = checkWinner();
+      if (winner) {
+        if (winner === 'Draw') {
+          scores.Draws++;
+        } else {
+          scores[winner]++;
+        }
+        updateScoreboard();
+        setTimeout(() => alert(`${winner === 'Draw' ? 'It\'s a draw!' : `Player ${winner} wins!`}`), 100);
+        buttons.forEach(btn => btn.removeEventListener('click', handleClick));
+      }
+      currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+    }
+
+    function resetGame() {
+      buttons.forEach(button => button.innerHTML = '');
+      currentPlayer = 'X';
+      buttons.forEach(btn => btn.addEventListener('click', handleClick));
+    }
+
+    function resetScores() {
+      scores = { X: 0, O: 0, Draws: 0 };
+      updateScoreboard();
+    }
+
+    function toggleMode() {
+      alert('Bot mode not implemented yet.');
+    }
+
+    document.getElementById('new-game').addEventListener('click', resetGame);
+    document.getElementById('restart').addEventListener('click', resetScores);
+    document.getElementById('toggle-mode').addEventListener('click', toggleMode);
+
+    document.getElementById('adjust-color').addEventListener('click', () => {
+      colorPicker.style.display = 'flex';
+    });
+
+    document.getElementById('select-emoji').addEventListener('click', () => {
+      emojiPicker.style.display = 'flex';
+    });
+
+    document.getElementById('close-color-picker').addEventListener('click', () => {
+      colorPicker.style.display = 'none';
+    });
+
+    document.getElementById('close-emoji-picker').addEventListener('click', () => {
+      emojiPicker.style.display = 'none';
+    });
+
+    document.querySelectorAll('.color-option').forEach(option => {
+      option.addEventListener('click', (event) => {
+        document.body.style.backgroundColor = event.target.dataset.color;
+        colorPicker.style.display = 'none';
+      });
+    });
+
+    document.querySelectorAll('.emoji-option').forEach(option => {
+      option.addEventListener('click', (event) => {
+        if (playerXEmoji === '❌') {
+          playerXEmoji = event.target.dataset.emoji;
+        } else {
+          playerOEmoji = event.target.dataset.emoji;
+          document.getElementById('emoji-picker').style.display = 'none';
+        }
+        buttons.forEach(btn => btn.innerHTML = '');
+      });
+    });
+
+    buttons.forEach(btn => btn.addEventListener('click', handleClick));
+  </script>
+</body>
+</html>
